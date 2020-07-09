@@ -1,0 +1,43 @@
+#include <Servo.h>
+#include<LiquidCrystal.h>
+int sensorPin = A0;
+int piezoPin = A1;
+Servo servo;
+int servoPin = 8;
+LiquidCrystal lcd(12,11,5,4,3,2);
+ 
+void setup() {
+ 
+     pinMode(sensorPin,INPUT);
+     pinMode(servoPin,OUTPUT);
+    // pinMode(servoPowCtrl,OUTPUT);
+     pinMode(piezoPin,OUTPUT);
+     servo.attach(servoPin);
+     Serial.begin(9600);
+     servo.write(120);
+     lcd.begin(16,2);
+     lcd.print("Moisture: ");
+}
+ 
+void loop(){
+  int sensorData = analogRead(sensorPin);
+  int mappedData = map(sensorData,1023,0,0,100);
+  Serial.println(mappedData);
+  lcd.setCursor(0,1);
+  lcd.print(mappedData);
+  lcd.println(" %   ");
+  waterPlant(mappedData);
+    delay(10000);//default st8, M8
+}
+void waterPlant(int mappedData){
+  if(mappedData<10){
+    digitalWrite(piezoPin,HIGH);
+    delay(3000);
+    digitalWrite(piezoPin,LOW);
+    }
+  if(mappedData<37){
+      servo.write(70);
+      delay(3000);//watering
+    servo.write(120);
+  }
+ }
